@@ -24,15 +24,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.yanzhenjie.recyclerview.swipe.SwipeItemClickListener;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenu;
+import com.yanzhenjie.recyclerview.swipe.SwipeMenuBridge;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuCreator;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuItem;
+import com.yanzhenjie.recyclerview.swipe.SwipeMenuItemClickListener;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView;
 import com.yanzhenjie.recyclerview.swipe.sample.R;
 import com.yanzhenjie.recyclerview.swipe.widget.DefaultItemDecoration;
@@ -49,7 +54,7 @@ import java.util.List;
  * Created by YanZhenjie on 2017/7/22.
  */
 public class MenuActivity extends AppCompatActivity {
-
+    static SwipeMenuRecyclerView recyclerView;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,16 +66,31 @@ public class MenuActivity extends AppCompatActivity {
         assert actionBar != null;
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        SwipeMenuRecyclerView recyclerView = (SwipeMenuRecyclerView) findViewById(R.id.recycler_view);
+         recyclerView = (SwipeMenuRecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new DefaultItemDecoration(ContextCompat.getColor(this, R.color.divider_color)));
         recyclerView.setSwipeMenuCreator(mSwipeMenuCreator);
 
+     /*   recyclerView.setSwipeItemClickListener(new SwipeItemClickListener() {
+            @Override
+            public void onItemClick(View view, int i) {
+                Toast.makeText(MenuActivity.this,"你点击了："+i,Toast.LENGTH_LONG).show();
+            }
+        });*/
+        recyclerView.setSwipeMenuItemClickListener(new SwipeMenuItemClickListener() {
+            @Override
+            public void onItemClick(SwipeMenuBridge swipeMenuBridge) {
+                Toast.makeText(MenuActivity.this,"点击"+swipeMenuBridge.getAdapterPosition(),Toast.LENGTH_LONG).show();
+                recyclerView.smoothCloseMenu();
+            }
+        });
         GroupAdapter adapter = new GroupAdapter();
         recyclerView.setAdapter(adapter);
 
         adapter.setListItems(createDataList());
+
+
     }
 
     /**
@@ -86,14 +106,14 @@ public class MenuActivity extends AppCompatActivity {
                 // 2. 指定具体的高，比如80;
                 // 3. WRAP_CONTENT，自身高度，不推荐;
                 int height = ViewGroup.LayoutParams.MATCH_PARENT;
-
+/*
                 SwipeMenuItem closeItem = new SwipeMenuItem(MenuActivity.this)
                         .setBackground(R.drawable.selector_purple)
                         .setImage(R.mipmap.ic_action_close)
                         .setWidth(width)
                         .setHeight(height);
                 swipeLeftMenu.addMenuItem(closeItem); // 添加菜单到左侧。
-                swipeRightMenu.addMenuItem(closeItem); // 添加菜单到右侧。
+                swipeRightMenu.addMenuItem(closeItem); // 添加菜单到右侧。*/
 
                 SwipeMenuItem addItem = new SwipeMenuItem(MenuActivity.this)
                         .setBackground(R.drawable.selector_green)
@@ -122,13 +142,21 @@ public class MenuActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(GroupViewHolder holder, int position) {
+        public void onBindViewHolder(GroupViewHolder holder, final int position) {
+            holder.itemView.findViewById(R.id.tv_title).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.e("backinfo","你点击了："+position);
+
+                }
+            });
             holder.bind(mListItems.get(position));
+
         }
 
         @Override
         public int getItemViewType(int position) {
-            if (mListItems.get(position) instanceof StickyListItem) {
+            if (position==0||position==5||position==20) {
                 return VIEW_TYPE_STICKY;
             }
             return VIEW_TYPE_NON_STICKY;
@@ -145,7 +173,7 @@ public class MenuActivity extends AppCompatActivity {
                 mListItems.add(new ListItem(item));
             }
 
-            Collections.sort(mListItems, new Comparator<ListItem>() {
+          /*  Collections.sort(mListItems, new Comparator<ListItem>() {
                 @Override
                 public int compare(ListItem o1, ListItem o2) {
                     return o1.text.compareToIgnoreCase(o2.text);
@@ -161,7 +189,7 @@ public class MenuActivity extends AppCompatActivity {
                     mListItems.add(i, stickyListItem);
                     size += 1;
                 }
-            }
+            }*/
             notifyDataSetChanged();
         }
     }
