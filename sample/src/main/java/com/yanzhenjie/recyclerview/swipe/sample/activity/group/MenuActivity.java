@@ -54,7 +54,7 @@ import java.util.List;
  * Created by YanZhenjie on 2017/7/22.
  */
 public class MenuActivity extends AppCompatActivity {
-    static SwipeMenuRecyclerView recyclerView;
+    SwipeMenuRecyclerView recyclerView;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,8 +81,8 @@ public class MenuActivity extends AppCompatActivity {
         recyclerView.setSwipeMenuItemClickListener(new SwipeMenuItemClickListener() {
             @Override
             public void onItemClick(SwipeMenuBridge swipeMenuBridge) {
+                swipeMenuBridge.closeMenu();
                 Toast.makeText(MenuActivity.this,"点击"+swipeMenuBridge.getAdapterPosition(),Toast.LENGTH_LONG).show();
-                recyclerView.smoothCloseMenu();
             }
         });
         GroupAdapter adapter = new GroupAdapter();
