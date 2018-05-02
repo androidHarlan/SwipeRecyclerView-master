@@ -67,7 +67,7 @@ public class LayoutActivity extends AppCompatActivity {
         tab = tabLayout.newTab();
         tab.setText("商品描述");
         tabLayout.addTab(tab);
-        
+
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {

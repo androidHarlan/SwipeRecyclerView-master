@@ -71,7 +71,7 @@ public class MainActivity extends BaseActivity {
                 break;
             }
             case 5: {
-                startActivity(new Intent(this, GroupActivity.class));
+                startActivity(new Intent(this, com.yanzhenjie.recyclerview.swipe.sample.activity.group.MenuActivity.class));
                 break;
             }
         }
