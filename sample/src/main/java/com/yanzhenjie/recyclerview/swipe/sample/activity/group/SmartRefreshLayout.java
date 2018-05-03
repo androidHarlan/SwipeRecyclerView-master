@@ -55,6 +55,7 @@ import java.util.List;
 public class SmartRefreshLayout extends AppCompatActivity {
     SwipeMenuRecyclerView recyclerView;
     GroupAdapter adapter;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +63,7 @@ public class SmartRefreshLayout extends AppCompatActivity {
 
       
      /*   mRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh_layout);*/
-         recyclerView = (SwipeMenuRecyclerView) findViewById(R.id.recycler_view);
+        recyclerView = (SwipeMenuRecyclerView) findViewById(R.id.recycler_view);
       /*  mRefreshLayout.setOnRefreshListener(mRefreshListener); // 刷新监听。*/
         recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -74,13 +75,13 @@ public class SmartRefreshLayout extends AppCompatActivity {
             public void onItemClick(SwipeMenuBridge swipeMenuBridge) {
                 swipeMenuBridge.closeMenu();
 
-                Toast.makeText(SmartRefreshLayout.this,"点击"+swipeMenuBridge.getAdapterPosition()+"你点击了那个菜单："+swipeMenuBridge.getPosition(),Toast.LENGTH_LONG).show();
+                Toast.makeText(SmartRefreshLayout.this, "点击" + swipeMenuBridge.getAdapterPosition() + "你点击了那个菜单：" + swipeMenuBridge.getPosition(), Toast.LENGTH_LONG).show();
             }
         });
-       adapter = new GroupAdapter();
+        adapter = new GroupAdapter();
         recyclerView.setAdapter(adapter);
         adapter.setListItems(createDataList());
-        RefreshLayout refreshLayout = (RefreshLayout)findViewById(R.id.refreshLayout);
+        RefreshLayout refreshLayout = (RefreshLayout) findViewById(R.id.refreshLayout);
         refreshLayout.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh(RefreshLayout refreshlayout) {
@@ -92,6 +93,11 @@ public class SmartRefreshLayout extends AppCompatActivity {
             @Override
             public void onLoadMore(RefreshLayout refreshlayout) {
                 refreshlayout.finishLoadMore(2000/*,false*/);//传入false表示加载失败
+                List<String> adds=new ArrayList<>();
+                for(int i=0;i<5;i++){
+                    adds.add("添加项");
+                }
+                adapter.add(adds);
             }
         });
 
@@ -158,7 +164,7 @@ public class SmartRefreshLayout extends AppCompatActivity {
             holder.itemView.findViewById(R.id.tv_title).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Log.e("backinfo","你点击了："+position);
+                    Log.e("backinfo", "你点击了：" + position);
 
                 }
             });
@@ -168,7 +174,7 @@ public class SmartRefreshLayout extends AppCompatActivity {
 
         @Override
         public int getItemViewType(int position) {
-            if (position==0||position==5||position==20) {
+            if (position == 0 || position == 5 || position == 20) {
                 return VIEW_TYPE_STICKY;
             }
             return VIEW_TYPE_NON_STICKY;
@@ -205,6 +211,12 @@ public class SmartRefreshLayout extends AppCompatActivity {
             }*/
             notifyDataSetChanged();
         }
+        public void add(List<String> newItems){
+            for (String item : newItems) {
+                mListItems.add(new ListItem(item));
+            }
+            notifyDataSetChanged();
+        }
     }
 
     private static class GroupViewHolder extends RecyclerView.ViewHolder {
@@ -230,11 +242,7 @@ public class SmartRefreshLayout extends AppCompatActivity {
         }
     }
 
-    private static class StickyListItem extends ListItem {
-        StickyListItem(String text) {
-            super(text);
-        }
-    }
+
 
     protected List<String> createDataList() {
         List<String> strings = new ArrayList<>();
