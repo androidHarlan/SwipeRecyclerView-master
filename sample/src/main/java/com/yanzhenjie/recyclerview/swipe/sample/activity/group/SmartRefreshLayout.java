@@ -20,12 +20,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -34,7 +31,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.yanzhenjie.recyclerview.swipe.SwipeItemClickListener;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnLoadMoreListener;
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenu;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuBridge;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuCreator;
@@ -45,8 +44,6 @@ import com.yanzhenjie.recyclerview.swipe.sample.R;
 import com.yanzhenjie.recyclerview.swipe.widget.DefaultItemDecoration;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -55,19 +52,15 @@ import java.util.List;
  * </p>
  * Created by YanZhenjie on 2017/7/22.
  */
-public class MenuActivity extends AppCompatActivity {
+public class SmartRefreshLayout extends AppCompatActivity {
     SwipeMenuRecyclerView recyclerView;
-
+    GroupAdapter adapter;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_group_menu);
+        setContentView(R.layout.activity_smartrefreshlayout_group_menu);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
-        assert actionBar != null;
-        actionBar.setDisplayHomeAsUpEnabled(true);
+      
      /*   mRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh_layout);*/
          recyclerView = (SwipeMenuRecyclerView) findViewById(R.id.recycler_view);
       /*  mRefreshLayout.setOnRefreshListener(mRefreshListener); // 刷新监听。*/
@@ -75,61 +68,35 @@ public class MenuActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new DefaultItemDecoration(ContextCompat.getColor(this, R.color.divider_color)));
         recyclerView.setSwipeMenuCreator(mSwipeMenuCreator);
-        recyclerView.useDefaultLoadMore(); // 使用默认的加载更多的View。
-        recyclerView.setLoadMoreListener(mLoadMoreListener); // 加载更多的监听。
+
         recyclerView.setSwipeMenuItemClickListener(new SwipeMenuItemClickListener() {
             @Override
             public void onItemClick(SwipeMenuBridge swipeMenuBridge) {
                 swipeMenuBridge.closeMenu();
 
-                Toast.makeText(MenuActivity.this,"点击"+swipeMenuBridge.getAdapterPosition()+"你点击了那个菜单："+swipeMenuBridge.getPosition(),Toast.LENGTH_LONG).show();
+                Toast.makeText(SmartRefreshLayout.this,"点击"+swipeMenuBridge.getAdapterPosition()+"你点击了那个菜单："+swipeMenuBridge.getPosition(),Toast.LENGTH_LONG).show();
             }
         });
-        GroupAdapter adapter = new GroupAdapter();
+       adapter = new GroupAdapter();
         recyclerView.setAdapter(adapter);
         adapter.setListItems(createDataList());
-
+        RefreshLayout refreshLayout = (RefreshLayout)findViewById(R.id.refreshLayout);
+        refreshLayout.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh(RefreshLayout refreshlayout) {
+                refreshlayout.finishRefresh(2000/*,false*/);//传入false表示刷新失败
+                adapter.setListItems(createDataList());
+            }
+        });
+        refreshLayout.setOnLoadMoreListener(new OnLoadMoreListener() {
+            @Override
+            public void onLoadMore(RefreshLayout refreshlayout) {
+                refreshlayout.finishLoadMore(2000/*,false*/);//传入false表示加载失败
+            }
+        });
 
     }
-    /**
-     * 加载更多。
-     */
-    private SwipeMenuRecyclerView.LoadMoreListener mLoadMoreListener = new SwipeMenuRecyclerView.LoadMoreListener() {
-        @Override
-        public void onLoadMore() {
-            Log.e("backinfo","onLoadMore");
-            recyclerView.postDelayed(new Runnable() {
-                @Override
-                public void run() {
 
-                    // 数据完更多数据，一定要掉用这个方法。
-                    // 第一个参数：表示此次数据是否为空。
-                    // 第二个参数：表示是否还有更多数据。
-                    recyclerView.loadMoreFinish(false, true);
-
-                    // 如果加载失败调用下面的方法，传入errorCode和errorMessage。
-                    // errorCode随便传，你自定义LoadMoreView时可以根据errorCode判断错误类型。
-                    // errorMessage是会显示到loadMoreView上的，用户可以看到。
-                    // mRecyclerView.loadMoreError(0, "请求网络失败");
-                }
-            }, 1000);
-        }
-    };
-    /**
-     * 刷新。
-     */
-    private SwipeRefreshLayout.OnRefreshListener mRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
-        @Override
-        public void onRefresh() {
-            recyclerView.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-
-
-                }
-            }, 1000); // 延时模拟请求服务器。
-        }
-    };
     /**
      * 菜单创建器。
      */
@@ -144,7 +111,7 @@ public class MenuActivity extends AppCompatActivity {
                 // 3. WRAP_CONTENT，自身高度，不推荐;
                 int height = ViewGroup.LayoutParams.MATCH_PARENT;
 
-                SwipeMenuItem closeItem = new SwipeMenuItem(MenuActivity.this)
+                SwipeMenuItem closeItem = new SwipeMenuItem(SmartRefreshLayout.this)
                         .setBackground(R.drawable.selector_purple)
                         .setImage(R.mipmap.ic_action_close)
                         .setWidth(width)
@@ -152,7 +119,7 @@ public class MenuActivity extends AppCompatActivity {
              /*   swipeLeftMenu.addMenuItem(closeItem); // 添加菜单到左侧。*/
                 swipeRightMenu.addMenuItem(closeItem); // 添加菜单到右侧。
 
-                SwipeMenuItem addItem = new SwipeMenuItem(MenuActivity.this)
+                SwipeMenuItem addItem = new SwipeMenuItem(SmartRefreshLayout.this)
                         .setBackground(R.drawable.selector_green)
                         .setText("添加")
                         .setTextColor(Color.WHITE)

@@ -74,6 +74,10 @@ public class MainActivity extends BaseActivity {
                 startActivity(new Intent(this, com.yanzhenjie.recyclerview.swipe.sample.activity.group.MenuActivity.class));
                 break;
             }
+            case 6: {
+                startActivity(new Intent(this, com.yanzhenjie.recyclerview.swipe.sample.activity.group.SmartRefreshLayout.class));
+                break;
+            }
         }
     }
 

@@ -100,7 +100,8 @@
             android:label="DrawerLayout"/>
         <activity
             android:name=".activity.nested.ViewPagerActivity"
-            android:label="ViewPager"/>
+            android:label="ViewPager"/>\
+        <activity android:name=".activity.group.SmartRefreshLayout"></activity>
 
         <!-- -->
         <activity

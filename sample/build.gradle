@@ -19,4 +19,6 @@ dependencies {
     compile rootProject.ext.dependencies.appCompat
     compile rootProject.ext.dependencies.cardView
     compile rootProject.ext.dependencies.loading
+    compile 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-alpha-5'
+    compile 'com.android.support:appcompat-v7:25.3.1'//版本 23以上（必须）
 }
