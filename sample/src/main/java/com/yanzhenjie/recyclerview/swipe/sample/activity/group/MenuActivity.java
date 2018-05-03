@@ -19,6 +19,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -71,6 +72,7 @@ public class MenuActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new DefaultItemDecoration(ContextCompat.getColor(this, R.color.divider_color)));
         recyclerView.setSwipeMenuCreator(mSwipeMenuCreator);
+        recyclerView.useDefaultLoadMore(); // 使用默认的加载更多的View。
 
      /*   recyclerView.setSwipeItemClickListener(new SwipeItemClickListener() {
             @Override
@@ -82,17 +84,29 @@ public class MenuActivity extends AppCompatActivity {
             @Override
             public void onItemClick(SwipeMenuBridge swipeMenuBridge) {
                 swipeMenuBridge.closeMenu();
-                Toast.makeText(MenuActivity.this,"点击"+swipeMenuBridge.getAdapterPosition(),Toast.LENGTH_LONG).show();
+
+                Toast.makeText(MenuActivity.this,"点击"+swipeMenuBridge.getAdapterPosition()+"你点击了那个菜单："+swipeMenuBridge.getPosition(),Toast.LENGTH_LONG).show();
             }
         });
         GroupAdapter adapter = new GroupAdapter();
         recyclerView.setAdapter(adapter);
-
         adapter.setListItems(createDataList());
 
-
     }
+    /**
+     * 刷新。
+     */
+    private SwipeRefreshLayout.OnRefreshListener mRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
+        @Override
+        public void onRefresh() {
+            recyclerView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
 
+                }
+            }, 1000); // 延时模拟请求服务器。
+        }
+    };
     /**
      * 菜单创建器。
      */
@@ -106,14 +120,14 @@ public class MenuActivity extends AppCompatActivity {
                 // 2. 指定具体的高，比如80;
                 // 3. WRAP_CONTENT，自身高度，不推荐;
                 int height = ViewGroup.LayoutParams.MATCH_PARENT;
-/*
+
                 SwipeMenuItem closeItem = new SwipeMenuItem(MenuActivity.this)
                         .setBackground(R.drawable.selector_purple)
                         .setImage(R.mipmap.ic_action_close)
                         .setWidth(width)
                         .setHeight(height);
-                swipeLeftMenu.addMenuItem(closeItem); // 添加菜单到左侧。
-                swipeRightMenu.addMenuItem(closeItem); // 添加菜单到右侧。*/
+             /*   swipeLeftMenu.addMenuItem(closeItem); // 添加菜单到左侧。*/
+                swipeRightMenu.addMenuItem(closeItem); // 添加菜单到右侧。
 
                 SwipeMenuItem addItem = new SwipeMenuItem(MenuActivity.this)
                         .setBackground(R.drawable.selector_green)
@@ -121,8 +135,16 @@ public class MenuActivity extends AppCompatActivity {
                         .setTextColor(Color.WHITE)
                         .setWidth(width)
                         .setHeight(height);
-                swipeLeftMenu.addMenuItem(addItem); // 添加菜单到左侧。
+              /*  swipeLeftMenu.addMenuItem(addItem); // 添加菜单到左侧。*/
                 swipeRightMenu.addMenuItem(addItem); // 添加菜单到右侧。
+             /*   SwipeMenuItem addItems = new SwipeMenuItem(MenuActivity.this)
+                        .setBackground(R.drawable.selector_green)
+                        .setText("添加")
+                        .setTextColor(Color.WHITE)
+                        .setWidth(width)
+                        .setHeight(height);
+                swipeLeftMenu.addMenuItem(addItems); // 添加菜单到左侧。
+                swipeRightMenu.addMenuItem(addItems); // 添加菜单到右侧。*/
             }
         }
     };
@@ -169,6 +191,7 @@ public class MenuActivity extends AppCompatActivity {
 
         void setListItems(List<String> newItems) {
             mListItems.clear();
+
             for (String item : newItems) {
                 mListItems.add(new ListItem(item));
             }
@@ -228,6 +251,7 @@ public class MenuActivity extends AppCompatActivity {
         for (int i = 0; i < 100; i++) {
             strings.add("第" + i + "个Item");
         }
+
         return strings;
     }
 

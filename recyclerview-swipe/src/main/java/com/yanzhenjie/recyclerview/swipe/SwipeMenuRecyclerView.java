@@ -625,7 +625,7 @@ public class SwipeMenuRecyclerView extends RecyclerView {
         return super.onTouchEvent(e);
     }
 
-    private View getSwipeMenuView(View itemView) {
+    public View getSwipeMenuView(View itemView) {
         if (itemView instanceof SwipeMenuLayout) return itemView;
         List<View> unvisited = new ArrayList<>();
         unvisited.add(itemView);

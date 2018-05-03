@@ -50,9 +50,13 @@ public final class SwipeMenuBridge {
     public SwipeMenuBridge setBackgroundDrawable(@DrawableRes int resId) {
         return setBackgroundDrawable(ContextCompat.getDrawable(mViewRoot.getContext(), resId));
     }
+    public View getmViewRoot(){
+        return mViewRoot;
+    }
 
     public SwipeMenuBridge setBackgroundDrawable(Drawable background) {
         ViewCompat.setBackground(mViewRoot, background);
+
         return this;
     }
 
